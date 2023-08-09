@@ -12,7 +12,7 @@ int system_server_process()
     return 0;
 }
 
-void create_system_server() 
+int create_system_server() 
 {
     printf("\t Create system server process...\n");
     switch (fork())
@@ -27,4 +27,6 @@ void create_system_server()
     default:
         break;
     }
+
+    return 1;
 }

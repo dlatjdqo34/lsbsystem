@@ -2,7 +2,7 @@
 #define _UI_H
 
 
-void create_ui();
+int create_ui();
 
 
 #endif

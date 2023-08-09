@@ -2,7 +2,7 @@
 #define _SYSTEM_SERVER_H
 
 
-void create_system_server();
+int create_system_server();
 
 
 #endif

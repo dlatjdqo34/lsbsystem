@@ -2,7 +2,7 @@
 #define _INPUT_H
 
 
-void create_input();
+int create_input();
 
 
 #endif

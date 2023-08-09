@@ -5,23 +5,23 @@
 #include <unistd.h>
 
 #include <utils.h>
-#include <ui.h>
+#include <web_server.h>
 
-int ui_process()
+int web_server_process()
 {
     return 0;
 }
 
-int create_ui() 
+int create_web_server() 
 {
-    printf("\t Create ui process...\n");
+    printf("\t Create web server process...\n");
     switch (fork())
     {
     case -1:
-        err_exit("[UI]\t fork error...");
+        err_exit("[WEB SERVER]\t fork error...");
         break;
     case 0: /* Child Process */
-        ui_process();
+        web_server_process();
         exit(EXIT_SUCCESS);
         break;
     default:

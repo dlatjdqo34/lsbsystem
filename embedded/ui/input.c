@@ -12,7 +12,7 @@ int input_process()
     return 0;
 }
 
-void create_input() 
+int create_input() 
 {
     printf("\t Create input process...\n");
     switch (fork())
@@ -27,4 +27,6 @@ void create_input()
     default:
         break;
     }
+
+    return 1;
 }
