@@ -14,15 +14,14 @@ int system_server_process()
 
 int create_system_server() 
 {
-    printf("\t Create system server process...\n");
     switch (fork())
     {
     case -1:
-        err_exit("[SYSTEM_SERVER]\t fork error...");
+        err_exit("SYSTEM_SERVER fork error...");
         break;
     case 0: /* Child Process */
         system_server_process();
-        exit(EXIT_SUCCESS);
+        _exit(EXIT_SUCCESS);
         break;
     default:
         break;

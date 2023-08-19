@@ -3,4 +3,4 @@
 cmake -S . -B out/build/
 cd out/build
 make
-mv lsbsystem ../..
+cp lsbsystem ../..

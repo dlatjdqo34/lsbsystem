@@ -6,6 +6,6 @@
 
 void err_exit(char* msg)
 {
-    perror(msg);
+    fprintf(stderr, "[ERROR]\t %s", msg);
     exit(EXIT_FAILURE);
 }

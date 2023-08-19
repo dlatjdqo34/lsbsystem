@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
+#include <assert.h>
+#include <errno.h>
 
 #include <system_server.h>
 #include <ui.h>
@@ -8,31 +11,47 @@
 #include <web_server.h>
 
 // #define NUM_PROCESS 5
+static int process_num = 0;
 
-int main(int argc, char* argv[])
+void block_until_child_die() 
 {
     pid_t pid;
-    int wstatus, num_process = 0;
+    int wstatus;
 
-    printf("[Main]\t Main Entry\n");
-
-    /* Create Processes */
-    num_process += create_input();
-    num_process += create_system_server();
-    num_process += create_ui();
-    num_process += create_web_server();
-
-    while (num_process) {
+    while (process_num) {
         pid = waitpid(-1, &wstatus, 0);
         if (WIFEXITED(wstatus)) {
-            printf("\t PID=%d EXITED with EXIT STATUS: %d\n", pid, WEXITSTATUS(wstatus));
-            num_process--;
+            printf("%d...\t PID=%d EXITED with EXIT STATUS: %d\n", 
+                process_num, pid, WEXITSTATUS(wstatus));
+            process_num--;
         }
         else if (WIFSIGNALED(wstatus)) {
-            printf("\t PID=%d EXITED with SIGNAL NUMBER: %d\n", pid, WTERMSIG(wstatus));
-            num_process--;
-        }
+            printf("%d...\t PID=%d EXITED with SIGNAL NUMBER: %d\n", 
+                process_num, pid, WTERMSIG(wstatus));
+            process_num--;
+        }   
     }
+}
 
+int main(int argc, char *argv[])
+{
+    printf("[MAIN]\t MAIN Entry\n\n");
+
+    /* Create Processes */
+    printf("\t Create input process...\n");
+    process_num += create_input();
+    printf("\t Create system server process...\n");
+    process_num += create_system_server();
+    printf("\t Create ui process...\n");
+    process_num += create_ui();
+    printf("\t Create web server process...\n");
+    process_num += create_web_server();
+
+    printf("[MAIN]\t Total %d process created!\n", process_num);
+
+    block_until_child_die();
+
+    printf("\n[Main]\t %d child processes left...\n", process_num);
+    printf("[MAIN]\t lsbsystem exit...\n");
     return 0;
 }

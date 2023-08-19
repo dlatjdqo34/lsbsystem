@@ -14,15 +14,14 @@ int ui_process()
 
 int create_ui() 
 {
-    printf("\t Create ui process...\n");
     switch (fork())
     {
     case -1:
-        err_exit("[UI]\t fork error...");
+        err_exit("UI fork error...");
         break;
     case 0: /* Child Process */
         ui_process();
-        exit(EXIT_SUCCESS);
+        _exit(EXIT_SUCCESS);
         break;
     default:
         break;
