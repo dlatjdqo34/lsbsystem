@@ -2,7 +2,7 @@
 #define _UI_H
 
 
-int create_ui();
+pid_t create_ui();
 
 
 #endif

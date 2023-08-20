@@ -12,9 +12,12 @@ int ui_process()
     return 0;
 }
 
-int create_ui() 
+pid_t create_ui() 
 {
-    switch (fork())
+    pid_t pid;
+
+    printf("\t Create ui process...\n");
+    switch ((pid = fork()))
     {
     case -1:
         err_exit("UI fork error...");
@@ -27,5 +30,5 @@ int create_ui()
         break;
     }
 
-    return 1;
+    return pid;
 }

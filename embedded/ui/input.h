@@ -2,7 +2,7 @@
 #define _INPUT_H
 
 
-int create_input();
+pid_t create_input();
 
 
 #endif

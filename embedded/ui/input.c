@@ -14,19 +14,33 @@
 
 #define SHELL_TOKEN_NUM     64
 #define SHELL_TOKEN_DELIM   " \t\n\r\a"
-
-
 #define BUILTIN_CMD_NUM     sizeof(builtin_shell_commands) / sizeof(map_cmd)
 
 /* Sleep time after thread creates */
 static unsigned int sleep_second = 2;
 
 
+int cmd_exit(char **args);
+
+/* [Begin] Data structure for mapping between command and function */
+
+typedef struct 
+{
+    char *cmd;
+    int (*func)(char **);
+} map_cmd;
+
+map_cmd builtin_shell_commands[] = {
+    { "exit", &cmd_exit },
+}; /* [End] Data structure for mapping between command and function */
+
 /* [Begin] Commands for shell */
 
 int cmd_exit(char **args)
 {
     printf("[SBSH]\t Terminate Program...\n");
+
+    /* Terminate this process */
     exit(EXIT_SUCCESS);
 
     /* UNREACHED */
@@ -35,17 +49,6 @@ int cmd_exit(char **args)
 
 
 /* [Begin] Data structure for mapping between command and function */
-
-typedef struct __map_cmd 
-{
-    char *cmd;
-    int (*func)(char **);
-} map_cmd;
-
-
-map_cmd builtin_shell_commands[] = {
-    { "exit", &cmd_exit },
-}; /* [End] Data structure for mapping between command and function */
 
 
 /* [Begin] Shell thread related functions */
@@ -156,8 +159,9 @@ void *shell_thread(void *arg)
 int input_process()
 {
     const char *name = "INPUT";
-    int ret;
-    pthread_t command_tid;
+    int tid;
+    void *status;
+    pthread_t shell_tid;
     // pthread_attr_t attr;
     
     if (prctl(PR_SET_NAME, (unsigned long) name) < 0)
@@ -165,19 +169,22 @@ int input_process()
     printf("[%s]\t %s process created!\n", name, name);
 
     /* Create shell thread for built-in command */
-    ret = pthread_create(&command_tid, NULL, shell_thread, "SBSH");
-    assert(ret==0);
+    tid = pthread_create(&shell_tid, NULL, shell_thread, "SBSH");
+    assert(tid==0);
 
-    while (1) {
-        sleep(1000);
-    }
+    pthread_join(shell_tid, &status);
+    
+    
 
     return 0;
 }
 
-int create_input() 
+pid_t create_input() 
 {
-    switch (fork())
+    pid_t pid;
+    
+    printf("\t Create input process...\n");
+    switch ((pid = fork()))
     {
     case -1:
         err_exit("INPUT fork error...");
@@ -190,5 +197,5 @@ int create_input()
         break;
     }
 
-    return 1;
+    return pid;
 } /* [End] Shell thread related functions */

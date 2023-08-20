@@ -12,9 +12,12 @@ int system_server_process()
     return 0;
 }
 
-int create_system_server() 
+pid_t create_system_server() 
 {
-    switch (fork())
+    pid_t pid;
+
+    printf("\t Create system server process...\n");
+    switch ((pid = fork()))
     {
     case -1:
         err_exit("SYSTEM_SERVER fork error...");
@@ -27,5 +30,5 @@ int create_system_server()
         break;
     }
 
-    return 1;
+    return pid;
 }

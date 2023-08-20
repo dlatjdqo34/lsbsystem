@@ -2,7 +2,7 @@
 #define _WEB_SERVER_H
 
 
-int create_web_server();
+pid_t create_web_server();
 
 
 #endif

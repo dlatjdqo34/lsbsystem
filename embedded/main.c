@@ -1,19 +1,53 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
 #include <assert.h>
 #include <errno.h>
+#include <string.h>
 
 #include <system_server.h>
 #include <ui.h>
 #include <input.h>
 #include <web_server.h>
 
-// #define NUM_PROCESS 5
-static int process_num = 0;
+#define CHILD_PROCESS_NUM sizeof(builtin_create_process_func) / sizeof(void *)
 
-void block_until_child_die() 
+pid_t (*builtin_create_process_func[])() = {
+    &create_input,
+    &create_system_server,
+    &create_ui,
+    &create_web_server
+};
+
+static int sigchld_handled_cnt = 0;
+static int process_num = 0;
+static pid_t child_pids[CHILD_PROCESS_NUM];
+
+void make_processes() 
+{
+    int i;
+
+    for (i = 0; i < CHILD_PROCESS_NUM; i++) {
+        child_pids[i] = builtin_create_process_func[i]();
+        process_num++;
+    }
+    printf("[MAIN]\t Total %d process created!\n", process_num);
+}
+
+
+void kill_all_processes_sighandler(int signum)
+{
+    printf("[SIGCHLD]\t handler called!\n");
+    if (sigchld_handled_cnt > 0)
+        return;
+    
+    sigchld_handled_cnt++;
+}
+
+/* Reap all child processes */
+void block_until_children_die() 
 {
     pid_t pid;
     int wstatus;
@@ -37,21 +71,12 @@ int main(int argc, char *argv[])
 {
     printf("[MAIN]\t MAIN Entry\n\n");
 
-    /* Create Processes */
-    printf("\t Create input process...\n");
-    process_num += create_input();
-    printf("\t Create system server process...\n");
-    process_num += create_system_server();
-    printf("\t Create ui process...\n");
-    process_num += create_ui();
-    printf("\t Create web server process...\n");
-    process_num += create_web_server();
+    signal(SIGCHLD, kill_all_processes_sighandler);
 
-    printf("[MAIN]\t Total %d process created!\n", process_num);
+    make_processes();
+    block_until_children_die();
 
-    block_until_child_die();
-
-    printf("\n[Main]\t %d child processes left...\n", process_num);
+    printf("\n[MAIN]\t %d child processes left...\n", process_num);
     printf("[MAIN]\t lsbsystem exit...\n");
     return 0;
 }

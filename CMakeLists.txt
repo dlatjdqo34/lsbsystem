@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22.1)
 project(lsbsystem)
 
 set(CMAKE_BUILD_TYPE DEBUG)
-set(CMAKE_C_FLAGS "-Wall -g -lpthread -lm -lrt -Wl,--no-as-needed -ldl -lseccomp")
+set(CMAKE_C_FLAGS "-Wall -g  -lm -lrt -Wl,--no-as-needed -ldl -lseccomp")
 
 include_directories (
     embedded 

@@ -12,9 +12,12 @@ int web_server_process()
     return 0;
 }
 
-int create_web_server() 
+pid_t create_web_server() 
 {
-    switch (fork())
+    pid_t pid;
+
+    printf("\t Create web server process...\n");
+    switch ((pid = fork()))
     {
     case -1:
         err_exit("WEB SERVER fork error...");
@@ -27,5 +30,5 @@ int create_web_server()
         break;
     }
 
-    return 1;
+    return pid;
 }
