@@ -17,7 +17,7 @@
 #define BUILTIN_CMD_NUM     sizeof(builtin_shell_commands) / sizeof(map_cmd)
 
 /* Sleep time after thread creates */
-static unsigned int sleep_second = 2;
+static unsigned int input_sleep_second = 2;
 
 
 int cmd_exit(char **args);
@@ -145,9 +145,9 @@ void *shell_thread(void *arg)
     char *thread_name = (char *)arg;
 
     printf("[%s]\t thread created! Shell starts in %d seconds...\n", 
-            thread_name, sleep_second);
+            thread_name, input_sleep_second);
 
-    sleep(sleep_second);
+    sleep(input_sleep_second);
     shell_loop();
 
     return NULL;
@@ -166,7 +166,7 @@ int input_process()
     
     if (prctl(PR_SET_NAME, (unsigned long) name) < 0)
         perror("[%s]\t Process nanme unchanged... Keep going\n");
-    printf("[%s]\t %s process created!\n", name, name);
+    printf("\n[%s]\t %s process created!\n\n", name, name);
 
     /* Create shell thread for built-in command */
     tid = pthread_create(&shell_tid, NULL, shell_thread, "SBSH");
@@ -183,7 +183,7 @@ pid_t create_input()
 {
     pid_t pid;
     
-    printf("\t Create input process...\n");
+    printf("...\t Create input process...\n");
     switch ((pid = fork()))
     {
     case -1:

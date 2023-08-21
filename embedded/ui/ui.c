@@ -16,7 +16,7 @@ pid_t create_ui()
 {
     pid_t pid;
 
-    printf("\t Create ui process...\n");
+    printf("...\t Create ui process...\n");
     switch ((pid = fork()))
     {
     case -1:

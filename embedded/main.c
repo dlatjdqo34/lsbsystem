@@ -39,7 +39,7 @@ void make_processes()
 
 void kill_all_processes_sighandler(int signum)
 {
-    printf("[SIGCHLD]\t handler called!\n");
+    printf("SIGCHLD\t handler called!\n");
     if (sigchld_handled_cnt > 0)
         return;
     

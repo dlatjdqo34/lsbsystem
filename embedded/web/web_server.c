@@ -16,7 +16,7 @@ pid_t create_web_server()
 {
     pid_t pid;
 
-    printf("\t Create web server process...\n");
+    printf("...\t Create web server process...\n");
     switch ((pid = fork()))
     {
     case -1:

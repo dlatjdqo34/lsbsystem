@@ -4,6 +4,7 @@
 
 #include <utils.h>
 
+
 void err_exit(char* msg)
 {
     fprintf(stderr, "[ERROR]\t %s", msg);
