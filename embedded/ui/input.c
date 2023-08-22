@@ -48,9 +48,6 @@ int cmd_exit(char **args)
 } /* [End] Commands for shell */
 
 
-/* [Begin] Data structure for mapping between command and function */
-
-
 /* [Begin] Shell thread related functions */
 
 char *shell_read_line()
