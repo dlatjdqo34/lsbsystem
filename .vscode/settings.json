@@ -1,6 +1,4 @@
 {
     "C_Cpp.errorSquiggles": "enabled",
-    "files.associations": {
-        "system_server.h": "c"
-    }
+    "C_Cpp.default.compilerPath": "/usr/bin/g++",
 }

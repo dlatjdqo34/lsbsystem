@@ -54,3 +54,4 @@ dkms.conf
 # Project output
 lsbsystem
 out/*
+build/*

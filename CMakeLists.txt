@@ -10,15 +10,18 @@ include_directories (
     embedded/utils
     embedded/system 
     embedded/ui
-    embedded/web 
+    embedded/web
+    # drivers
 )
 
 add_executable (
     ${PROJECT_NAME} 
     embedded/main.c 
     embedded/utils/utils.c 
+    embedded/utils/mq.c 
     embedded/ui/input.c
     embedded/ui/ui.c
     embedded/system/system_server.c 
     embedded/web/web_server.c
+    # drivers/test_driver.c
 )
