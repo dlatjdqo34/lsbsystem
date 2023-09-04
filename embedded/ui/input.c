@@ -137,7 +137,7 @@ void shell_loop()
     } while (status >= 0);
 }
 
-void *shell_thread(void *arg)
+void *shell_thread_fn(void *arg)
 {
     char *thread_name = (char *)arg;
 
@@ -158,7 +158,7 @@ int input_process()
     const char *name = "INPUT";
     int tid;
     void *status;
-    pthread_t shell_tid;
+    pthread_t shell_thread;
     // pthread_attr_t attr;
     
     if (prctl(PR_SET_NAME, (unsigned long) name) < 0)
@@ -166,12 +166,10 @@ int input_process()
     printf("\n[%s]\t %s process created!\n\n", name, name);
 
     /* Create shell thread for built-in command */
-    tid = pthread_create(&shell_tid, NULL, shell_thread, "SBSH");
+    tid = pthread_create(&shell_thread, NULL, shell_thread_fn, "SBSH");
     assert(tid==0);
 
-    pthread_join(shell_tid, &status);
-    
-    
+    pthread_join(shell_thread, &status);
 
     return 0;
 }

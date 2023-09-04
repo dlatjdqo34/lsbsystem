@@ -53,6 +53,8 @@ int lsb_mq_recv(mqd_t mqd, void *msg_ptr)
     if (ret == -1) {
         fprintf(stderr, "[%s]\t mq_receive() in lsb_mq_recv", strerror(errno));
     }
+
+    return ret;
 }
 
 
