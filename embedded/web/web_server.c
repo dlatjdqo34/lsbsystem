@@ -3,12 +3,28 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/prctl.h>
+#include <pthread.h>
+#include <assert.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <utils.h>
 #include <web_server.h>
+#include <lsb_timer.h>
 
 int web_server_process()
 {
+    const char *name = "WEB_SERVER";
+
+    if (prctl(PR_SET_NAME, (unsigned long) name) < 0)
+        perror("[%s]\t Process nanme unchanged... Keep going\n");
+    printf("\n[%s]\t pid=%d process created!\n\n", name, getpid());
+
+    while(1) {
+        lsb_sleep(10, 0);
+    }
+
     return 0;
 }
 

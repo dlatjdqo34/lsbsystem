@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <mq.h>
+#include <lsb_mq.h>
 #include <utils.h>
 
 #define MQ_LIST_NUM 10

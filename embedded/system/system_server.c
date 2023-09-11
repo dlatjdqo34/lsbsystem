@@ -11,7 +11,7 @@
 
 #include <utils.h>
 #include <system_server.h>
-
+#include <lsb_timer.h>
 
 void *disk_thread(void *arg)
 {
@@ -27,13 +27,17 @@ int system_server_process()
 
     if (prctl(PR_SET_NAME, (unsigned long) name) < 0)
         perror("[%s]\t Process nanme unchanged... Keep going\n");
-    printf("\n[%s]\t %s process created!\n\n", name, name);
+    printf("\n[%s]\t pid=%d process created!\n\n", name, getpid());
     
     /* Create shell thread for built-in command */
     tid = pthread_create(&shell_tid, NULL, disk_thread, "SBSH");
     assert(tid==0);
 
     pthread_join(shell_tid, &status);
+
+    while (1) {
+        lsb_sleep(10, 0);
+    }
 
     return 0;
 }

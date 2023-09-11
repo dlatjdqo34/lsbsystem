@@ -11,6 +11,7 @@
 
 #include <utils.h>
 #include <input.h>
+#include <lsb_timer.h>
 
 #define SHELL_TOKEN_NUM     64
 #define SHELL_TOKEN_DELIM   " \t\n\r\a"
@@ -144,7 +145,7 @@ void *shell_thread_fn(void *arg)
     printf("[%s]\t thread created! Shell starts in %d seconds...\n", 
             thread_name, input_sleep_second);
 
-    sleep(input_sleep_second);
+    lsb_sleep(input_sleep_second, 0);
     shell_loop();
 
     return NULL;
@@ -163,7 +164,7 @@ int input_process()
     
     if (prctl(PR_SET_NAME, (unsigned long) name) < 0)
         perror("[%s]\t Process nanme unchanged... Keep going\n");
-    printf("\n[%s]\t %s process created!\n\n", name, name);
+    printf("\n[%s]\t pid=%d process created!\n\n", name, getpid());
 
     /* Create shell thread for built-in command */
     tid = pthread_create(&shell_thread, NULL, shell_thread_fn, "SBSH");

@@ -3,12 +3,25 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <sys/prctl.h>
 
 #include <utils.h>
 #include <ui.h>
+#include <lsb_timer.h>
 
 int ui_process()
 {
+    const char *name = "UI";
+
+    if (prctl(PR_SET_NAME, (unsigned long) name) < 0)
+        perror("[%s]\t Process nanme unchanged... Keep going\n");
+    printf("\n[%s]\t pid=%d process created!\n\n", name, getpid());
+
+    while(1) {
+        lsb_sleep(10, 0);
+    }
+
     return 0;
 }
 

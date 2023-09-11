@@ -1,4 +1,11 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
-    "C_Cpp.default.compilerPath": "/home/lsb/lsbsystem/buildroot/output/host/bin/aarch64-buildroot-linux-gnu-gcc",
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+    "files.associations": {
+        "*.c": "c",
+        "mqueue.h": "c",
+        "utils.h": "c",
+        "time.h": "c",
+        "system_server.h": "c"
+    },
 }

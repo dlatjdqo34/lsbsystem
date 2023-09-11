@@ -4,8 +4,8 @@
  *  We need -lrt link option while compiling.
  */
 
-#ifndef _MQ_H
-#define _MQ_H
+#ifndef _LSB_MQ_H
+#define _LSB_MQ_H
 
 #include <fcntl.h>           /* For O_* constants */
 #include <sys/stat.h>        /* For mode constants */

@@ -13,13 +13,14 @@ INCLUDE =$(patsubst %,-I%, $(DIRS))
 
 CC=gcc
 CFLAGS=-Wall -g
-LDFLAGS=-lm -lrt -Wl,--no-as-needed -ldl -lseccomp
+LDFLAGS=-lm -lrt -Wl,--no-as-needed -ldl -lseccomp -lpthread
 
 _OBJS = main.o \
 		$(SYSTEM)/system_server.o \
 		$(UI)/input.o \
 		$(UI)/ui.o \
-		$(UTILS)/mq.o \
+		$(UTILS)/lsb_mq.o \
+		$(UTILS)/lsb_timer.o \
 		$(UTILS)/utils.o \
 		$(WEB)/web_server.o 
 
