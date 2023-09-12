@@ -25,13 +25,12 @@ int cmd_exit(char **args);
 
 /* [Begin] Data structure for mapping between command and function */
 
-typedef struct 
-{
+typedef struct {
     char *cmd;
     int (*func)(char **);
 } map_cmd;
 
-map_cmd builtin_shell_commands[] = {
+static map_cmd builtin_shell_commands[] = {
     { "exit", &cmd_exit },
 }; /* [End] Data structure for mapping between command and function */
 

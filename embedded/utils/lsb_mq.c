@@ -2,81 +2,86 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include <lsb_mq.h>
 #include <utils.h>
 
-#define MQ_LIST_NUM 10
+#define MAX_MQ_LIST_NUM 10
 
-static struct mq_attr lsb_mq_attr;
-static lsb_mq lsb_all_mq_list[MQ_LIST_NUM];
+typedef struct {
+    char name[MAX_NAME_LEN];
+    mqd_t mqd;
+} lsb_mq_t;
 
-void lsb_mq_attr_init(long num, long size)
-{
-    lsb_mq_attr.mq_maxmsg = num; 
-    lsb_mq_attr.mq_msgsize = size; 
-    lsb_mq_attr.mq_curmsgs = 0;
-}
+static lsb_mq_t mq_list[MAX_MQ_LIST_NUM];
+static int cur_mq_index = 0;
 
-mqd_t lsb_mq_create(char *name)
+mqd_t create_mq(const char *name, long num, long size)
 {
     mqd_t mqd;
 
-    mqd = mq_open(name, O_CREAT | O_RDWR | O_EXCL,  0666, &lsb_mq_attr);
-    if (mqd == -1) {
-        err_exit("mq_open() in lsb_mq_create");
+    struct mq_attr mq_attr;
+    memset(&mq_attr, 0, sizeof(mq_attr));
+    mq_attr.mq_maxmsg = num;
+    mq_attr.mq_msgsize = size; 
+
+    if (cur_mq_index == MAX_MQ_LIST_NUM) {
+        err_exit("mq_list is full in create_mq");
     }
+
+    if (strlen(name) >= MAX_NAME_LEN) {
+        fprintf(stderr, "NAME TOO LONG!! Name for mqueue should be less than %d", MAX_NAME_LEN);
+        err_exit("strlen() in create_mq");
+    }
+
+    mq_unlink(name);
+    mqd = mq_open(name, O_CREAT | O_RDWR | O_EXCL | O_CLOEXEC, 0666, &mq_attr);
+    if (mqd == -1) {
+        if (errno == EEXIST) { // mqueue name "name" already exist, try open again
+            mqd = mq_open(name, O_RDWR);
+            assert(mqd != -1);
+        }
+        else {
+            fprintf(stderr, "%s", strerror(errno));
+            err_exit("mq_open() in create_mq");
+        }
+    }
+
+    /* Insert created mqueue in mq_list */
+    strncpy(mq_list[cur_mq_index].name, name, strlen(name));
+    mq_list[cur_mq_index].mqd = mqd;
+    cur_mq_index++;
 
     return mqd;
 }
 
-/* Send message to mq with */
-int lsb_mq_send(mqd_t mqd, void *msg_ptr)
+int close_mq(mqd_t mqd)
 {
-    lsb_msg *msg = (lsb_msg *)msg_ptr;
     int ret;
 
-    ret = mq_send(mqd, (char *)msg, sizeof(lsb_msg), 0);
+    ret = mq_close(mqd);
     if (ret == -1) {
-        fprintf(stderr, "[%s]\t mq_send() in lsb_mq_send", strerror(errno));
+        fprintf(stderr, "mq_close() in close_mq(%d): %s\n", mqd, strerror(errno));
     }
 
     return ret;
 }
 
-int lsb_mq_recv(mqd_t mqd, void *msg_ptr)
-{
-    lsb_msg *msg = (lsb_msg *)msg_ptr;
-    int ret;
-
-    ret = mq_receive(mqd, (char *)msg, sizeof(lsb_msg), 0);
-    if (ret == -1) {
-        fprintf(stderr, "[%s]\t mq_receive() in lsb_mq_recv", strerror(errno));
-    }
-
-    return ret;
-}
-
-
-void lsb_mq_destroy(char *name)
+void destroy_mq(char *name)
 {
     int ret = mq_unlink(name);
     if (ret) {
-        if (errno == EACCES) 
-            err_exit("The caller does not have permission to unlink this message queue.");
-        else if (errno == ENAMETOOLONG)
-            err_exit("name was too long");
-        else 
-            err_exit("There is no message queue with the given name");
+        fprintf(stderr, "mq_unlink() in destroy_mq(%s): %s\n", name, strerror(errno));
     }
 }
 
-void lsb_mq_destroy_all()
+void destroy_all_mq()
 {
     int i;
 
-    for (i = 0; i < MQ_LIST_NUM; i++) {
-        lsb_mq_destroy(lsb_all_mq_list[i].name);
+    for (i = 0; i < cur_mq_index; i++) {
+        destroy_mq(mq_list[i].name);
     }
 }
 

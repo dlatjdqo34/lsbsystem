@@ -31,14 +31,16 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDE) $(LDFLAGS) -o $@ $(OBJS)
-	@cp $@ ../
 
 $(OUTDIR)/%.o: %.c
 	$(shell mkdir -p $(OUTSUBDIRS))
 	$(CC) $(CFLAGS) $(INCLUDE) $(LDFLAGS) -c -o $@ $<
 
-.PHONY: clean
+.PHONY: run clean
+run:
+	@./$(TARGET)
+
 clean: 
-	rm -rf $(OUTDIR) $(TARGET) ../$(TARGET)
+	rm -rf $(OUTDIR) $(TARGET)
 
 

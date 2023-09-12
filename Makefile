@@ -1,4 +1,5 @@
 SUBDIRS = embedded
+RUNDIR = embedded
 
 .PHONY: all clean 
 all clean:
@@ -8,4 +9,4 @@ all clean:
 
 .PHONY: run
 run:
-	@./lsbsystem
+	$(MAKE) -C $(RUNDIR) $@

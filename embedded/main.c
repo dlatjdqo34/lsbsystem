@@ -18,8 +18,10 @@
 #include <web_server.h>
 #include <utils.h>
 #include <lsb_timer.h>
+#include <lsb_mq.h>
 
 #define CHILD_PROCESS_NUM sizeof(builtin_create_process_func) / sizeof(void *)
+#define MAX_MQ_NUM 10
 
 pid_t (*builtin_create_process_func[])() = {
     &create_input,
@@ -28,11 +30,11 @@ pid_t (*builtin_create_process_func[])() = {
     &create_web_server
 };
 
-static int sigchld_handled_cnt = 0;
+static int sig_handled_cnt = 0;
 static int process_num = 0;
 static pid_t child_pids[CHILD_PROCESS_NUM];
 static pthread_t watchdog_thread, killer_thread;
-
+static mqd_t watchdog_mq;
 
 void create_processes() 
 {
@@ -43,6 +45,11 @@ void create_processes()
         process_num++;
     }
     printf("[MAIN]\t Total %d process created!\n", process_num);
+}
+
+void create_mqueues()
+{
+    watchdog_mq = create_mq("/watchdog", MAX_MQ_NUM, sizeof(watchdog_msg_t));
 }
 
 void *watchdog_thread_fn(void *arg)
@@ -88,7 +95,7 @@ void *killer_thread_fn(void *arg)
                 printf("[%s]\t No process with pid = %d\n", thread_name, child_pids[i]);
             continue;
         }
-        kill(child_pids[i], SIGKILL);
+        kill(child_pids[i], SIGKILL); // force child to terminate
         printf("[%s]\t thread sends sigkill to pid=%d\n", thread_name, child_pids[i]);
         lsb_sleep(1, 0);
     }
@@ -102,13 +109,14 @@ void wake_up_killer_thread(int sig)
 
     signame = strsignal(sig);
     if (signame != NULL)
-        printf("handler called: %s\n", strsignal(sig));
+        printf("[MAIN]\t handler called: %s\n", strsignal(sig));
     
-    if (sigchld_handled_cnt > 0)
+    /* wake up killer thread only once */
+    if (sig_handled_cnt > 0)
         return;
 
     pthread_kill(killer_thread, SIGUSR1);
-    sigchld_handled_cnt++;
+    sig_handled_cnt++;
 }
 
 /* Reap all child processes */
@@ -138,19 +146,21 @@ int main(int argc, char *argv[])
     void *status;
 
     printf("[MAIN]\t pid=%d process created!\n\n", getpid());
-
-    killer_tid = pthread_create(&killer_thread, NULL, killer_thread_fn, "KILLER");
-    assert(killer_tid==0);
-
     signal(SIGCHLD, wake_up_killer_thread);
+    create_mqueues();
     create_processes();
 
+    /* create threads */
+    killer_tid = pthread_create(&killer_thread, NULL, killer_thread_fn, "KILLER");
+    assert(killer_tid==0);
     watchdog_tid = pthread_create(&watchdog_thread, NULL, watchdog_thread_fn, "WATCHDOG");
     assert(watchdog_tid==0);
 
     block_until_children_die();
 
     pthread_join(killer_thread, &status);
+
+    destroy_all_mq();
 
     printf("\n[MAIN]\t %d child processes left...\n", process_num);
     printf("[MAIN]\t lsbsystem exit...\n");
