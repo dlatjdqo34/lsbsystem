@@ -1,5 +1,6 @@
 APP_DIR=embedded
-MODULES_DIR=drivers/tutorial/hello_module 
+MODULES_DIR=drivers/tutorial/01.hello_module \
+			drivers/tutorial/02.export
 
 SUBDIRS=$(APP_DIR) $(MODULES_DIR)
 
@@ -8,7 +9,9 @@ RPI_DIR=/root
 RPI_PATH?=$(RPI_SERVER_IP):$(RPI_DIR)
 
 SCP_FILES = $(APP_DIR)/lsbsystem \
-			drivers/tutorial/hello_module/hello_module.ko
+			drivers/tutorial/01.hello_module/hello_module.ko \
+			drivers/tutorial/02.export/export_module1.ko \
+			drivers/tutorial/02.export/export_module2.ko \
 
 .PHONY: all clean 
 all clean:
