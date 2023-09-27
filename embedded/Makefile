@@ -26,8 +26,12 @@ _OBJS = main.o \
 
 OBJS = $(patsubst %,$(OUTDIR)/%, $(_OBJS))
 
+RPI_SERVER_IP?=root@192.168.20.60
+RPI_DIR=/root
+RPI_PATH?=$(RPI_SERVER_IP):$(RPI_DIR)
+
 .PHONY: all
-all: $(TARGET)
+all default: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDE) $(LDFLAGS) -o $@ $(OBJS)
@@ -36,9 +40,12 @@ $(OUTDIR)/%.o: %.c
 	$(shell mkdir -p $(OUTSUBDIRS))
 	$(CC) $(CFLAGS) $(INCLUDE) $(LDFLAGS) -c -o $@ $<
 
-.PHONY: run clean
+.PHONY: run scp clean
 run:
 	@./$(TARGET)
+
+scp:
+	scp lsbsystem $(RPI_PATH)
 
 clean: 
 	rm -rf $(OUTDIR) $(TARGET)

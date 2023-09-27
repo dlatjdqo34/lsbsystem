@@ -6,6 +6,7 @@
         "mqueue.h": "c",
         "utils.h": "c",
         "time.h": "c",
-        "system_server.h": "c"
+        "system_server.h": "c",
+        "typeinfo": "c"
     },
 }

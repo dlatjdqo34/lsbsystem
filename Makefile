@@ -1,5 +1,14 @@
-SUBDIRS = embedded
-RUNDIR = embedded
+APP_DIR=embedded
+MODULES_DIR=drivers/tutorial/hello_module 
+
+SUBDIRS=$(APP_DIR) $(MODULES_DIR)
+
+RPI_SERVER_IP?=root@192.168.20.60
+RPI_DIR=/root
+RPI_PATH?=$(RPI_SERVER_IP):$(RPI_DIR)
+
+SCP_FILES = $(APP_DIR)/lsbsystem \
+			drivers/tutorial/hello_module/hello_module.ko
 
 .PHONY: all clean 
 all clean:
@@ -7,6 +16,20 @@ all clean:
 		$(MAKE) -C $$dir $@; \
 	done
 
+.PHONY: app
+app:
+	$(MAKE) -C $(APP_DIR)
+
+.PHONY: modules
+modules:
+	@for dir in $(MODULES_DIR); do \
+		$(MAKE) -C $$dir; \
+	done
+
 .PHONY: run
 run:
-	$(MAKE) -C $(RUNDIR) $@
+	$(MAKE) -C $(APP_DIR) $@ 
+
+.PHONY: scp
+scp:
+	scp $(SCP_FILES) $(RPI_PATH)

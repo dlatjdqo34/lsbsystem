@@ -18,7 +18,8 @@ typedef struct {
 } lsb_msg_t;
 
 typedef struct {
-    int op;
+    int pid;
+    
 } watchdog_msg_t;
 
 mqd_t create_mq(const char *name, long num, long size);

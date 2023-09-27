@@ -151,8 +151,7 @@ void *shell_thread_fn(void *arg)
 } /* [End] Shell thread related functions */
 
 
-/* [Begin] Shell thread related functions */
-
+/* [Begin] Process related functions */
 int input_process()
 {
     const char *name = "INPUT";
@@ -193,4 +192,4 @@ pid_t create_input()
     }
 
     return pid;
-} /* [End] Shell thread related functions */
+} /* [End] Process related functions */
