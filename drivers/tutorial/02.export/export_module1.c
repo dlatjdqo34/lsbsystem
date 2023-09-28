@@ -10,7 +10,10 @@ void shared_func(void)
     shared_count++;
 }
 
-/* Export symbols of this kernel module */
+/*  Export symbols of this kernel module 
+    So other kernel modules can use these variables or functions
+    @EXPORT_SYMBOL()
+*/
 EXPORT_SYMBOL(shared_func);
 EXPORT_SYMBOL(shared_count);
 
