@@ -2,6 +2,7 @@ APP_DIR=embedded
 MODULES_DIR=drivers/tutorial/01.hello_module \
 			drivers/tutorial/02.export \
 			drivers/tutorial/03.param \
+			drivers/tutorial/04.device_tree \
 
 SUBDIRS=$(APP_DIR) $(MODULES_DIR)
 
@@ -14,6 +15,8 @@ SCP_FILES = $(APP_DIR)/lsbsystem \
 			drivers/tutorial/02.export/export_module1.ko \
 			drivers/tutorial/02.export/export_module2.ko \
 			drivers/tutorial/03.param/module_param.ko \
+			drivers/tutorial/04.device_tree/kdt_device_tree.ko \
+			drivers/tutorial/04.device_tree/kdt.dtbo \
 
 .PHONY: all clean 
 all clean:
