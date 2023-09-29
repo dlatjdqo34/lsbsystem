@@ -41,3 +41,12 @@ run:
 .PHONY: scp
 scp:
 	scp $(SCP_FILES) $(RPI_PATH)
+
+.PHONY: nfs
+nfs:
+	@for dir in $(SUBDIRS); do \
+		mkdir -p /mnt/nfs/$$dir; \
+	done
+	@for file in $(SCP_FILES); do \
+		scp $$file /mnt/nfs/$$file; \
+	done
