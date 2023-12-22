@@ -26,15 +26,11 @@ Type command below on your terminal
  	cd lsbsystem
 
 ## How to build
-This project used Cmake to build<br>
-You can simply build the project by execute shell script named "__build__" <br>
-This shell script would make output directory contains Cmake relational files and executable file. Then move exe file to the working directory<br><br>
-Just Type the command below in project directory
 
-	./build		# build whole project with shell script using Cmake
- 	./lsbsystem	# Simpley run program by execute ELF file 
+	./make		# build whole project with make
 
+## How to run
 
+	./make run
 
- 
 
